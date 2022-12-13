@@ -20,11 +20,18 @@ public partial class ListPage : ContentPage
         await App.Database.DeleteShopListAsync(slist);
         await Navigation.PopAsync();
     }
-    async void OnDeleteButtonClickedItem(object sender, EventArgs e)
+    async void OnDeleteItemButtonClicked(object sender, EventArgs e)
     {
-        var sproduct = (Product)BindingContext;
-        await App.Database.DeleteProductAsync(sproduct);
-        await Navigation.PopAsync();
+        Product product;
+        var shopList = (ShopList)BindingContext;
+        if (listView.SelectedItem != null)
+        {
+            product = listView.SelectedItem as Product;
+            var listProductAll = await App.Database.GetListProducts();
+            var listProduct = listProductAll.FindAll(x => x.ProductID == product.ID & x.ShopListID == shopList.ID);
+            await App.Database.DeleteListProductAsync(listProduct.FirstOrDefault());
+            await Navigation.PopAsync();
+        }
     }
     async void OnChooseButtonClicked(object sender, EventArgs e)
     {
